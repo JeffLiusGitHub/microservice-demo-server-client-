@@ -1,0 +1,29 @@
+Important Note Regarding Node v17
+Currently, there is a critical bug in many libraries such as Webpack and Create React App caused by the release of Node v17.
+
+https://github.com/facebook/create-react-app/issues/11562 (still unresolved)
+
+https://github.com/webpack/webpack/issues/14532 (currently resolved)
+
+To move forward, you should use the LTS v16 version of Node until the bug has been officially addressed. In general, we always recommend the use of the LTS version to avoid bugs such as this.
+
+The workaround mentioned to add the --openssl-legacy-provider flag may not be appropriate for all situations, and is not a long-term solution. Based on discussion in the official issues thread, this may not be fully addressed until CRA v5 is released.
+
+When creating your Dockerfiles in the next lecture, modify the FROM instruction to use the v16 version of Node Alpine:
+
+FROM node:16-alpine
+
+//
+
+Warning on Docker Desktop for Linux
+In the upcoming lecture, we will be discussing the installation of Kubernetes. This note is a warning for students who have natively installed a Linux OS and are attempting to use Docker Desktop. This does not pertain to students running Linux with Windows WSL.
+
+Docker Desktop for Linux is just out of beta and has proven to be very buggy. It appears that it is also having issues working at all with Skaffold and syncing.
+
+For these reasons, we do not recommend using it until it is more stable. Minikube has been the standard solution for running Kubernetes on Linux for many years, so, that would be our recommendation for this course.
+
+We cannot provide any support for Docker Desktop for Linux as of now because of all of its issues.
+
+We will be closely monitoring the issues threads of these libraries and will update the guidance here when appropriate.
+
+//
