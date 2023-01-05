@@ -24,3 +24,7 @@ sync downsides
 1. need comments, from posts, if comments fail, post also fail.
 2. large request, wait for slowest request
 3. some service may have structure A->B->C, complex
+
+
+Kubernetes running different containers
+give configuration to describe how to run container and interact with each other
