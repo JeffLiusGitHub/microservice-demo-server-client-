@@ -16,7 +16,7 @@ app.post('/posts', async (req, res) => {
 
 	posts[id] = { id, title };
 	try {
-		await axios.post('http://localhost:4005/events', {
+		await axios.post('http://event-bus-srv:4005/events', {
 			type: 'PostCreated',
 			data: { id, title },
 		});
@@ -37,5 +37,6 @@ app.post('/events', (req, res) => {
 });
 
 app.listen(4000, () => {
+	console.log('version sth sth new');
 	console.log('post listening on 4000');
 });
