@@ -28,7 +28,6 @@ We will be closely monitoring the issues threads of these libraries and will upd
 
 //
 
-
 Note About Docker Build Output and Buildkit
 In the next lecture, we will be building a Docker image of our Posts service. Students who have the most recent versions of Docker will now have "Buildkit" enabled by default. If so, you will notice a slightly different output in your terminal when building from a Dockerfile.
 
@@ -36,12 +35,12 @@ The main difference for students will be the final step in the build process. As
 
 ---> fc60771eaa08
 Successfully Built fc60771eaa08
- 
+
 Now, with Buildkit, the final step would say:
 
- => => exporting layers                                                      
- => => writing image sha256:ee59c34ada9890ca09145cc88ccb25d32b677fc3b61e921  0.0s
- 
+=> => exporting layers  
+ => => writing image sha256:ee59c34ada9890ca09145cc88ccb25d32b677fc3b61e921 0.0s
+
 Both fc60771eaa08 and ee59c34ada9890ca09145cc88ccb25d32b677fc3b61e921 are the resulting image ID's that you would use to run a container.
 
 eg:
@@ -50,7 +49,6 @@ docker run fc60771eaa08
 or
 
 docker run ee59c34ada9890ca09145cc88ccb25d32b677fc3b61e921
-
 
 Disabling Buildkit to match course output
 
@@ -65,10 +63,10 @@ Select "Docker Engine"
 Change buildkit from true to false
 
 {
-  "features": {
-    "buildkit": false
-  },
-  "experimental": false
+"features": {
+"buildkit": false
+},
+"experimental": false
 }
 Apply and Restart.
 
@@ -121,10 +119,9 @@ First, run kubectl delete -f infra/k8s/
 Then, update your pod manifest:
 
 spec:
-  containers:
-    - name: posts
-      image: cygnet/posts:0.0.1
-      imagePullPolicy: Never
+containers: - name: posts
+image: cygnet/posts:0.0.1
+imagePullPolicy: Never
 Then, run kubectl apply -f infra/k8s/
 
 This will ensure that Kubernetes will use the image built locally from your image cache instead of attempting to pull from a registry.
@@ -179,29 +176,69 @@ Notably, a pathType needs to be added, and how we specify the backend service na
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-srv
-  annotations:
-    kubernetes.io/ingress.class: nginx
+name: ingress-srv
+annotations:
+kubernetes.io/ingress.class: nginx
 spec:
-  rules:
-    - host: posts.com
-      http:
-        paths:
-          - path: /posts
-            pathType: Prefix
-            backend:
-              service:
-                name: posts-clusterip-srv
-                port:
-                  number: 4000
+rules: - host: posts.com
+http:
+paths: - path: /posts
+pathType: Prefix
+backend:
+service:
+name: posts-clusterip-srv
+port:
+number: 4000
 The zip resources attached to each lecture will contain the updated v1 API Ingress code if you need it.
 
 //
 
-Important Note to Add Environment Variable
-Please don't skip this!  You must make a small change to get a step shown in the next video to work correctly!
+Important Note About Port 80
+In the upcoming lecture, we will be editing our hosts file so that we can access posts.com/posts in our browser. If you are unable to access the application you may have something already running on port 80, which is the default port for the ingress. Before doing anything, please make sure you have properly installed the ingress-nginx controller for your particular Kubernetes client. Many students are skipping this step!
 
-The next video is going to show the deployment of the React app to our Kubernetes cluster.  The React app will be running in a Docker container.
+https://www.udemy.com/course/microservices-with-node-js-and-react/learn/lecture/26492690#questions
+
+Once you have confirmed that you have indeed installed/enabled the ingress-nginx controller, you'll need to identify if something is running on port 80 and shut it down. Some students have even had applications from other courses or personal projects still running. For Windows Pro users, both SQL Server Reporting Services (MSSQLSERVER) and the World Wide Web Publishing Service / IIS Server have been the most common services causing a conflict.
+
+To determine what might be using this port, in your terminal run:
+
+Windows
+Using Powershell with elevated permissions:
+
+netstat -anb
+
+Scroll to the top of the returned output and find the listing for port 80. If Docker is properly listening on port 80 you should see:
+
+TCP   0.0.0.0:80   0.0.0.0:0   LISTENING
+
+[com.docker.backend.exe]
+
+If something else is listed for TCP 0.0.0.0:80, you'll need to shut that service down.
+
+macOS
+sudo lsof -i tcp:80
+
+If Docker is properly listening on port 80 you should see something very similar:
+
+COMMAND    PID USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+
+com.docke 8263 user  113u  IPv6 0xa20e89998489120d      0t0  TCP *:http (LISTEN)
+
+If something else is listed for TCP *:http, you'll need to shut that service down.
+
+
+
+Note - Minikube users on Windows and macOS should also make sure that they aren't using the docker driver which is not compatible with an ingress as noted here:
+
+https://www.udemy.com/course/microservices-with-node-js-and-react/learn/lecture/23145358#questions
+
+//
+
+
+Important Note to Add Environment Variable
+Please don't skip this! You must make a small change to get a step shown in the next video to work correctly!
+
+The next video is going to show the deployment of the React app to our Kubernetes cluster. The React app will be running in a Docker container.
 
 Unfortunately, create-react-app currently has two bugs that prevent it from running correctly in a docker container:
 
@@ -209,24 +246,23 @@ https://github.com/facebook/create-react-app/issues/8688
 
 https://github.com/facebook/create-react-app/issues/11779
 
-
-
-To solve this, we have to add two environment variables to the Dockerfile in the client folder.  Find the Dockerfile in the client folder and make the following change:
+To solve this, we have to add two environment variables to the Dockerfile in the client folder. Find the Dockerfile in the client folder and make the following change:
 
 FROM node:16-alpine
- 
+
 # Add the following lines
+
 ENV CI=true
 ENV WDS_SOCKET_PORT=0
- 
+
 WORKDIR /app
 COPY package.json ./
 RUN npm install
 COPY ./ ./
- 
+
 CMD ["npm", "start"]
-Then save the file.  That's it!  Continue on to the next video.
+Then save the file. That's it! Continue on to the next video.
 
 //
 
-04-13 Preferred Method for Updating Deployments
+

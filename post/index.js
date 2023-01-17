@@ -10,7 +10,7 @@ const posts = {};
 app.get('/posts', (req, res) => {
 	res.send(posts);
 });
-app.post('/posts', async (req, res) => {
+app.post('/posts/create', async (req, res) => {
 	const id = randomBytes(4).toString('hex');
 	const title = req.body.title;
 
@@ -30,11 +30,11 @@ app.post('/events', (req, res) => {
 	console.log('Received Event', req.body.type);
 	res.send({});
 });
-app.post('/events', (req, res) => {
-	console.log('Received Event', req.body.type);
+// app.post('/events', (req, res) => {
+// 	console.log('Received Event', req.body.type);
 
-	res.send({});
-});
+// 	res.send({});
+// });
 
 app.listen(4000, () => {
 	console.log('version sth sth new');
